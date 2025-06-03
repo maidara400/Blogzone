@@ -139,7 +139,7 @@
         
     </div>
 <?php
-    $titre = "Article" ;
+    $titre = "Article" ; 
     $content = ob_get_clean() ;
     require_once 'include/template.php';
  ?>
