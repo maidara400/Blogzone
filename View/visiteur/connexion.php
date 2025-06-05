@@ -1,4 +1,12 @@
-<?php session_start(); ?>
+<?php 
+    session_start(); 
+   include_once '../../App/Model/utilisateur.php';
+   if(isset($_SESSION['message'])) {
+       include_once 'include/composant.php';
+       alert($_SESSION['message'],'success');
+       unset($_SESSION['message']);
+   }
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -26,30 +34,23 @@
     }
 </style>
 <body class="body m-0 p-0">
-     <?php 
-            include_once '../../App/Model/utilisateur.php';
-            if(isset($_SESSION['message'])) {
-                include_once 'include/composant.php';
-                alert($_SESSION['message'],'success');
-                unset($_SESSION['message']);
-            }
-    ?>
+  
     <main class="min-vh-100 d-flex justify-content-center align-items-center " >
          <div class="container mt-5 pt-3 d-flex justify-content-center align-items-center ">
             <div class="shadow-lg card p-3  overflow-hidden " style="width: 28rem; height: 25rem; max-height: 400px; background-color: rgb(51, 51, 51);">
                 <div class="card-title fw-bold text-light text-center my-3 h3">Connexion</div>
-                <form action="connexion.php" method="POST" >
+                <form action="../../App/Controller/authentification.php" method="POST" >
                     <div class="form-floating mb-3">
                         <input type="email" class="form-control bg-transparent text-light border-0" id="floatingInput" placeholder="name@example.com" name="mail" required>
-                        <label for="floatingInput">Email address</label>
+                        <label for="floatingInput">Adresse Mail</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="password" class="form-control bg-transparent text-light border-0" id="floatingPassword" placeholder="Password" name="password" required>
-                        <label for="floatingPassword">Password</label>
+                        <input type="password" class="form-control bg-transparent text-light border-0" id="floatingPassword" placeholder="Mot de Passe" name="password" required>
+                        <label for="floatingPassword">Mot de Passe</label>
                     </div>
 
                     <div class="form-check mb-3 ms-3">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" value="1" name="remember">
                         <label class="form-check-label text-secondary" for="flexCheckDefault">
                             Se souvenir de moi
                         </label>

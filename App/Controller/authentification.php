@@ -7,7 +7,11 @@ if(isset($_POST['inscription'])) {
     $message = $utilisateur->ajouter();
     echo $message; // Display the message returned by the ajouter method
 }
-
+if(isset($_POST['connexion'])) {
+    $utilisateur = new Utilisateur();
+    $message = $utilisateur->connecter();
+    echo $message; // Display the message returned by the connecter method
+}
 
 
 ?>

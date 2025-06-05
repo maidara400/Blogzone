@@ -11,14 +11,14 @@
         public $password;
         public $role;
 
-        public function __construct($nom, $prenom, $mail, $password, $role = 'user') {
+        public function __construct($nom = '', $prenom = '', $mail = '', $password = '', $role = 'user') {
             $this->nom = htmlspecialchars(trim($nom));
             $this->prenom = htmlspecialchars(trim($prenom));
             $this->mail = htmlspecialchars(trim($mail));
-            $this->password = password_hash(htmlspecialchars(trim($password)), PASSWORD_DEFAULT);
+            $this->password = htmlspecialchars(trim($password));
             $this->role = htmlspecialchars(trim($role));
         }
-
+// fonction pour l inscrption de l utilisateur
          public function ajouter(){
             if(isset($_POST['inscription'])){
                 $this->nom = $_POST['nom'];
@@ -50,6 +50,7 @@
                     return $_SESSION['message']; // Limit reached
                     exit();
                 }
+                // validation des champs
                 else if(!empty($this->nom) && strlen($this->nom) >= 3 && 
                    !empty($this->prenom) && strlen($this->prenom) >= 3 && 
                    !empty($this->mail) && filter_var($this->mail, FILTER_VALIDATE_EMAIL) && 
@@ -77,6 +78,50 @@
                 }
             }
           
+        }
+
+        // fonction pour connecter l'utilisateur
+
+        public function connecter() {
+            if(isset($_POST['connexion'])) {
+                $this->mail = trim(htmlspecialchars($_POST['mail']));
+                $this->password = trim(htmlspecialchars($_POST['password']));
+                    // var_dump($this->password);die();
+
+
+                // validation des champs
+                if(!empty($this->mail) && filter_var($this->mail, FILTER_VALIDATE_EMAIL) && 
+                   !empty($this->password) && strlen($this->password) >= 6) {
+                    $pdo = Database::getInstance();
+                    $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE mail = :mail");
+                    $stmt->bindParam(':mail', $this->mail);
+                    $stmt->execute();
+                    $user = $stmt->fetch(PDO::FETCH_OBJ);
+
+                    if($user && password_verify($this->password, $user->password)) {
+                        session_start();
+                        $_SESSION['id'] = $user->id;
+                        $_SESSION['nom'] = $user->nom;
+                        $_SESSION['prenom'] = $user->prenom;
+                        $_SESSION['mail'] = $user->mail;
+                        $_SESSION['role'] = $user->role;
+                        header("Location:../../View/admin/index.php");
+                        exit();
+                    } else {
+                        $message = "Identifiants incorrects. Veuillez réessayer.";
+                        header("Location:../../View/visiteur/connexion.php");
+                        session_start();
+                        $_SESSION['message'] = $message;
+                        return $_SESSION['message']; // Login failed
+                    }
+                } else {
+                    $message = "Veuillez remplir tous les champs correctement.";
+                    header("Location:../../View/visiteur/connexion.php");
+                    session_start();
+                    $_SESSION['message'] = $message;
+                    return $_SESSION['message']; // Validation failed
+                }
+            }
         }
 
 
