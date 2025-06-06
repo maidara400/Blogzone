@@ -86,8 +86,7 @@
             if(isset($_POST['connexion'])) {
                 $this->mail = trim(htmlspecialchars($_POST['mail']));
                 $this->password = trim(htmlspecialchars($_POST['password']));
-                    // var_dump($this->password);die();
-
+                $se_souvenir = isset($_POST['se_souvenir']) ? $_POST['se_souvenir'] : '';
 
                 // validation des champs
                 if(!empty($this->mail) && filter_var($this->mail, FILTER_VALIDATE_EMAIL) && 
@@ -99,20 +98,26 @@
                     $user = $stmt->fetch(PDO::FETCH_OBJ);
 
                     if($user && password_verify($this->password, $user->password)) {
+                        // Si l'utilisateur a coché "Se souvenir de moi", on crée un cookie
                         session_start();
-                        $_SESSION['id'] = $user->id;
-                        $_SESSION['nom'] = $user->nom;
-                        $_SESSION['prenom'] = $user->prenom;
-                        $_SESSION['mail'] = $user->mail;
-                        $_SESSION['role'] = $user->role;
+                         $_SESSION['username'] = $user->nom;
+                         // var_dump($_SESSION);die();
+                        if($se_souvenir == 1 ){
+                            // On crée un cookie pour se souvenir de l'utilisateur pour un mois
+                            setcookie("utilisateur", $user->mail, time() + 111600, "/");
+                            setcookie("password_utilisateur",$this->password, time() + 111600, "/") ;
+                        }
+                        $message = "Bienvenue  ".$user->nom;
+                        $_SESSION['message'] = $message;
                         header("Location:../../View/admin/index.php");
                         exit();
+                        return $_SESSION['message']; 
                     } else {
                         $message = "Identifiants incorrects. Veuillez réessayer.";
                         header("Location:../../View/visiteur/connexion.php");
                         session_start();
                         $_SESSION['message'] = $message;
-                        return $_SESSION['message']; // Login failed
+                        return $_SESSION['message']; 
                     }
                 } else {
                     $message = "Veuillez remplir tous les champs correctement.";
