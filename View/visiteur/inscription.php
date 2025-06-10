@@ -1,6 +1,8 @@
 <?php
+    $title = "Inscription";
     session_start();
     include_once '../../App/Model/utilisateur.php';
+    
     if(isset($_SESSION['message'])) {
         include_once 'include/composant.php';
         alert($_SESSION['message'],'danger');

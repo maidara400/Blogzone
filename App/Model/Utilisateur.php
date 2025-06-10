@@ -1,7 +1,10 @@
 <?php 
-    
-    include_once '../../Migration/database.php';
-    include_once '../../View/visiteur/include/composant.php';
+    // chemin vers le fichier database.php
+    require_once __DIR__ . '../../../config.php'; 
+    require_once BASE_PATH . '/Migration/database.php';
+    require_once BASE_PATH . '/View/visiteur/include/composant.php';    
+
+
    
     class Utilisateur{
         public $id;
@@ -25,7 +28,7 @@
                 $this->prenom = $_POST['prenom'];
                 $this->mail = $_POST['mail'];
                 $this->password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-                $this->role = 'user';
+                $this->role = isset($_POST['role'])  ? $_POST['role'] : 'user';
 
                 // verififions que l utilisateur n'existe pas deja
                 $pdo = Database::getInstance();
@@ -35,7 +38,18 @@
                 $user = $stmt->fetch(PDO::FETCH_OBJ);
                 if($user) {
                     $message = "L'utilisateur avec l'email ( ".$user->mail." )  existe déjà.";
-                    return alert($message,'danger'); // User already exists
+                     if($this->role = 1 || $this->role = 2 ){
+                         header("Location:../../View/admin/utilisateur/ajouter.php"); 
+                         session_start();
+                         $_SESSION['message'] = $message;
+                         return $_SESSION['message'];   
+                    }else{
+                        header("Location:../../View/visiteur/inscription.php"); 
+                         session_start();
+                         $_SESSION['message'] = $message;
+                         return $_SESSION['message'];   
+                    }
+                   
                 }
 
                 // verification du nombre d'utilisateurs
@@ -43,12 +57,21 @@
                 $stmt->execute();
                 $users = $stmt->fetchAll(PDO::FETCH_OBJ);
                 if(count($users) > 20) {
-                    $message = "La limite d'utilisateur a été atteinte, revenez plus tard.";
-                    header("Location:../../View/visiteur/index.php");
-                    session_start();
-                    $_SESSION['message'] = $message;
-                    return $_SESSION['message']; // Limit reached
-                    exit();
+                    if($this->role == 1 || $this->role == 2 ){
+                         $message = "La limite d'utilisateur a été atteinte  (".count($users).")  veuillez augmenter la limite du nombre d utilisateurs.";
+                         header("Location:../../View/admin/utilisateur/ajouter.php"); 
+                         session_start();
+                         $_SESSION['message'] = $message;
+                         return $_SESSION['message'];   
+                    }else{
+                         $message = "La limite d'utilisateur a été atteinte, revenez plus tard.";
+                        header("Location:../../View/visiteur/index.php");
+                        session_start();
+                        $_SESSION['message'] = $message;
+                        return $_SESSION['message']; // Limit reached
+                        exit();
+                    }
+                   
                 }
                 // validation des champs
                 else if(!empty($this->nom) && strlen($this->nom) >= 3 && 
@@ -63,6 +86,13 @@
                     $stmt->bindParam(':password', $this->password);
                     $stmt->bindParam(':role', $this->role);
                     $stmt->execute();
+                    if($this->role == 1 || $this->role == 2 ){
+                        $message = "Utilisateur ajoute avec success" ;
+                        header("Location:../../View/admin/utilisateur/afficher.php");
+                        session_start();
+                        $_SESSION['message'] = $message ;
+                        return $_SESSION['message'];
+                    }
                     $message = "Inscription réussie.";
                     header("Location:../../View/visiteur/connexion.php"); 
                     session_start();
@@ -71,10 +101,13 @@
                     exit();
                 } else {
                     $message = "Quelque chose a mal tourné. Inscription échouée. Veuillez réessayer.";
-                    header("Location:../../View/visiteur/inscription.php");
-                    session_start(); 
-                    $_SESSION['message'] = $message;
-                    return $_SESSION['message']; // Validation failed
+                     if($this->role = 1 || $this->role = 2 ){
+                        header("Location:../../View/admin/utilisateur/ajouter.php");
+                        session_start(); 
+                        $_SESSION['message'] = $message;
+                        return $_SESSION['message']; // Validation failed
+                    }
+                    
                 }
             }
           
@@ -129,10 +162,98 @@
             }
         }
 
+        // fonction pour deconnecter l'utilisateur
+        public function deconnecter() {
+            session_start();
+            session_unset();
+            session_destroy();
+            setcookie("utilisateur", "", time() - 111600, "/");
+            setcookie("password_utilisateur", "", time() - 111600, "/");
+            header("Location:../../View/visiteur/connexion.php");
+            exit();
+        }
+
+        // fonction pour afficher les utilisateurs
+        public static function afficherUtilisateurs() {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("SELECT * FROM utilisateurs");
+            $stmt->execute();
+            $utilisateurs = $stmt->fetchAll(PDO::FETCH_OBJ);
+            // comptons le nombre de contributeurs
+            $pdo2 = Database::getInstance();
+            $stmt2 = $pdo->prepare("SELECT COUNT(*) as count FROM utilisateurs WHERE role = 'user'");
+            $stmt2->execute();
+            $contributeurs = $stmt2->fetch(PDO::FETCH_OBJ);
+            return [
+                 'contributeurs' => $contributeurs,
+                 'utilisateurs' => $utilisateurs
+            ];
+        }
+
+        // fonction pour afficher un utilisateur par son id
+        public static function afficherUtilisateurParId($id) {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE id = :id");
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+            $utilisateur = $stmt->fetch(PDO::FETCH_OBJ);
+            return $utilisateur;
+        }
+
+        // fonction pour modifier un utilisateur
+        public function modifier($id) {
+           
+            $this->nom = htmlspecialchars(trim($_POST['nom']));
+            $this->prenom = htmlspecialchars(trim($_POST['prenom']));
+            $this->mail = htmlspecialchars(trim($_POST['mail']));
+            $this->password = htmlspecialchars(trim($_POST['password']));
+            $this->role = htmlspecialchars(trim($_POST['role']));
+            
+            if(empty($this->nom) || empty($this->prenom) || empty($this->mail) || empty($this->password)) {
+                $message = "Veuillez remplir tous les champs.";
+                header("Location:../../View/admin/utilisateur/modifier.php?modifier=$id"); 
+                session_start();
+                $_SESSION['message'] = $message;
+                return $_SESSION['message'];
+            }
+
+            $hashedPassword = password_hash($this->password, PASSWORD_DEFAULT);
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("UPDATE utilisateurs SET nom = :nom, prenom = :prenom, mail = :mail, role = :role, password = :password WHERE id = :id");
+            $stmt->bindParam(':nom', $this->nom);
+            $stmt->bindParam(':prenom', $this->prenom);
+            $stmt->bindParam(':mail', $this->mail);
+            $stmt->bindParam(':role', $this->role);
+            $stmt->bindParam(':password', $hashedPassword);
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+            $message = "Utilisateur modifié avec succès.";
+            if($this->role == 1 || $this->role == 2 ){
+                session_start();
+                $_SESSION['message'] = $message;
+                header("Location:../../View/admin/utilisateur/afficher.php"); 
+                return $_SESSION['message'];
+            }
+
+        }
+
+        // fonction pour supprimer un utilisateur
+        public static function supprimer($id) {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("DELETE FROM utilisateurs WHERE id = :id");
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+            $message = "Utilisateur supprimé avec succès.";
+            session_start();
+            $_SESSION['message'] = $message;
+            header("Location:../../View/admin/utilisateur/afficher.php");
+            exit();
+            return $_SESSION['message']; 
+        }
+        
 
 
     }
 
-  
 
 ?>
