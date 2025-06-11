@@ -53,7 +53,7 @@ include_once '../../App/Model/commentaire.php';
             <h6 class="mb-5" style="color: #ccc;">Laissez un commentaire</h6>
             <form action="../../App/Controller/article.php" method="POST">
                 <div class="form-floating mb-3">
-                    <input type="hidden" name="id_article" id="" value="1">
+                    <input type="hidden" name="id_article" id="" value="10">
                     <input type="email" class="form-control bg-transparent text-light border-0" id="floatingInput" placeholder="name@example.com" name="mail" value="<?php echo isset($_COOKIE['utilisateur']) ? $_COOKIE['utilisateur'] : ''; ?>" required>
                     <label for="floatingInput">Adresse Mail</label>
                 </div>
