@@ -28,14 +28,19 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `article` (
-  `id_article` int(11) NOT NULL,
+  `id_article` int(11) NOT NULL AUTO_INCREMENT,
   `libelle` varchar(100) NOT NULL,
   `description` varchar(255) NOT NULL,
   `image` text NOT NULL,
   `aime` int(11) NOT NULL,
-  `date_creation` datetime NOT NULL DEFAULT current_timestamp()
+  `date_creation` datetime NOT NULL DEFAULT current_timestamp(),
+  `id_utilisateur` int(11) NOT NULL,
+  `id_categorie` int(11) DEFAULT NULL,
+  `dislike` int(11) DEFAULT 0,
+  PRIMARY KEY (`id_article`),
+  FOREIGN KEY (`id_utilisateur`) REFERENCES `utilisateurs`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`id_categorie`) REFERENCES `categorie`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 -- --------------------------------------------------------
 
 --
@@ -77,7 +82,8 @@ CREATE TABLE `utilisateurs` (
   `email` varchar(100) NOT NULL,
   `genre` varchar(10) NOT NULL,
   `role` varchar(10) NOT NULL,
-  `date` datetime NOT NULL DEFAULT current_timestamp()
+  `mot_de_passe` varchar(255) NOT NULL,
+  `date_inscription` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
