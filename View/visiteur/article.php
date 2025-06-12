@@ -13,7 +13,7 @@
 <?php ob_start(); $title = $article_p->titre; ?>
 <style>
     .form-control {
-        background-color: transparent;
+        background-color: transparent;;
         color: white;
     }
     .form-control::placeholder {
