@@ -141,51 +141,6 @@ $recents = $pdo->query("SELECT * FROM articles ORDER BY date_creation DESC LIMIT
             <!-- Deuxième section -->
             <div class="col-lg-7 col-md-8 col-sm-12">
     <div class="row">
-        <?php
-        for ($i = 0; $i < 6; $i++) {
-            echo '
-            <div class="col-md-6 mb-4">
-                <div class="card bg-dark text-white border-0 rounded-4 shadow h-100">
-                    <img src="image/photo9.jpg" class="card-img-top rounded-top-4" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">Titre article</h5>
-                        <p class="card-text">Petit résumé ou description.</p>
-                        <div class="d-flex justify-content-between align-items-center interaction-icons">
-                            <small>
-                                <i class="fa-regular fa-thumbs-up me-1"></i>
-                                <i class="fa-regular fa-thumbs-down ms-3"></i>
-                            </small>
-                            <small><i class="fa-regular fa-comment"></i> 3</small>
-                        </div>
-                    </div>
-                </div>
-            </div>';
-        }
-        ?>
-    </div>
-</div>
-
-
-            <!-- Troisième section -->
-            <div class="col-lg-3 col-md-12 d2">
-                <?php
-                for ($j = 0; $j < 4; $j++) {
-                    echo '
-                    <div class="card bg-dark text-white mb-4 shadow">
-                        <img src="image/photo7.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <p class="card-text">Texte de la carte</p>
-                        </div>
-                    </div>';
-                }
-                ?>
-            </div>
-        </div>
-    </div>
-
-    <div class="container-fluid mt-4">
-        <div class="row">
-
             <!-- Première section -->
             <div class="col-lg-2 col-md-4 col-sm-12">
                 <div class="side-section">
