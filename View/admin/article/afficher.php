@@ -3,7 +3,6 @@
     session_start();
     include_once '../../../App/Model/article.php';
     $article = new Article();
-   // $articles = $article->afficherArticles();
    $data = $article->afficherArticles();
    $articles = $data['articles'];
   // var_dump($articles);die();

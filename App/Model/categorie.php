@@ -112,4 +112,14 @@ class Categorie {
             exit();
             return $_SESSION['message']; 
         }
+
+        // afficher touts les articles d'une categorie
+        public static function afficherArticlesParCategorie($id) {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("SELECT * FROM article WHERE categorie_id = :id");
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+            $articles = $stmt->fetchAll(PDO::FETCH_OBJ);
+            return $articles;
+        }
 }

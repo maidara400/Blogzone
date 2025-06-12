@@ -173,7 +173,7 @@ class Article {
         }
 
 
-         // fonction pour supprimer un utilisateur
+         // fonction pour supprimer un article
         public static function supprimer($id) {
             $pdo = Database::getInstance();
             $stmt = $pdo->prepare("DELETE FROM article WHERE id = :id");
@@ -185,6 +185,61 @@ class Article {
             header("Location:../../View/admin/article/afficher.php");
             exit();
             return $_SESSION['message']; 
+        }
+
+        // fonction pour afficher les articles par categorie
+        public static function afficherArticlesParCategorie($categorie_id) {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("SELECT * FROM article WHERE categorie_id = :categorie_id");
+            $stmt->bindParam(':categorie_id', $categorie_id);
+            $stmt->execute();
+            $articles = $stmt->fetchAll(PDO::FETCH_OBJ);
+            return $articles;
+        }
+        // fonction pour afficher les derniers articles
+        public static function afficherDerniersArticles($limit = 5) {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("SELECT * FROM article ORDER BY id DESC LIMIT :limit");
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $articles = $stmt->fetchAll(PDO::FETCH_OBJ);
+            return $articles;
+        }
+
+        // fonction pour afficher un nombre d articles aleatoires mais n affiche celle aui est afficher dans la function afficherArticleLePlusAime
+        public static function afficherArticlesAleatoires($limit = 5) {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("SELECT * FROM article ORDER BY RAND() LIMIT :limit");
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $articles = $stmt->fetchAll(PDO::FETCH_OBJ);
+            return $articles;
+        }
+
+        // fonction pour afficher l article le plus aimé si aucun article n est aime on affiche un article aléatoire chaque 10mns
+        public static function afficherArticleLePlusAime() {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("SELECT * FROM article ORDER BY jaime DESC LIMIT 1");
+            $stmt->execute();
+            $article = $stmt->fetch(PDO::FETCH_OBJ);
+            if($article) {
+                return $article;
+            } else {
+                // Si aucun article n'est aimé, on affiche un article aléatoire
+                return self::afficherArticlesAleatoires(1)[0];
+            }
+        }
+
+        // afficher les articles de la meme categorie avec une limites ensuite le reste des articles seront afficher dans la page de l article
+        public static function afficherArticlesDeLaMemeCategorie($categorie_id, $article_id, $limit = 3) {
+            $pdo = Database::getInstance();
+            $stmt = $pdo->prepare("SELECT * FROM article WHERE categorie_id = :categorie_id AND id != :article_id ORDER BY RAND() LIMIT :limit");
+            $stmt->bindParam(':categorie_id', $categorie_id);
+            $stmt->bindParam(':article_id', $article_id);
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $articles = $stmt->fetchAll(PDO::FETCH_OBJ);
+            return $articles;
         }
 
 
