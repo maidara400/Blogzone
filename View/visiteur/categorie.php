@@ -18,6 +18,7 @@ $recents = $pdo->query("SELECT * FROM articles ORDER BY date_creation DESC LIMIT
 <!DOCTYPE html>
 <html lang="fr">
 
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -105,41 +106,6 @@ $recents = $pdo->query("SELECT * FROM articles ORDER BY date_creation DESC LIMIT
     </nav>
 
     <div class="container-fluid mt-4">
-        <div class="row">
-
-            <!-- Première section -->
-            <div class="col-lg-2 col-md-4 col-sm-12">
-                <div class="side-section">
-                <span class="badge bg-primary text-uppercase fw-bold mb-3">Actualité</span>
-                    <h5>Découvrir</h5>
-                    <p>Voici une section</p>
-                </div>
-
-                <div class="side-section">
-                    <h5 class="mb-3">Favoris</h5>
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <input class="form-check-input me-2" type="checkbox" id="fav1">
-                            <label class="form-check-label" for="fav1">Informatique</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-2" type="checkbox" id="fav2">
-                            <label class="form-check-label" for="fav2">Médecine</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-2" type="checkbox" id="fav3">
-                            <label class="form-check-label" for="fav3">Finance</label>
-                        </li>
-                        <li class="list-group-item">
-                            <input class="form-check-input me-2" type="checkbox" id="fav4">
-                            <label class="form-check-label" for="fav4">People</label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Deuxième section -->
-            <div class="col-lg-7 col-md-8 col-sm-12">
     <div class="row">
             <!-- Première section -->
             <div class="col-lg-2 col-md-4 col-sm-12">
